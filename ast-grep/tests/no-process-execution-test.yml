@@ -1,0 +1,11 @@
+id: no-process-execution
+valid:
+  - 'auto result = connection.Query("SELECT 1");'
+  - 'void subsystem();'
+invalid:
+  - 'system("echo test");'
+  - 'void f() { std::system("echo test"); }'
+  - 'void f() { ::system("echo test"); }'
+  - 'popen("echo test", "r");'
+  - 'void f() { ::popen("echo test", "r"); }'
+  - '_popen("echo test", "r");'

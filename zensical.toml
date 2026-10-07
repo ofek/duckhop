@@ -1,0 +1,26 @@
+[project]
+site_name = "DuckHop"
+site_url = "https://ofek.dev/duckhop/"
+site_description = "DuckDB extension for persistent graph indexing and native traversal"
+repo_url = "https://github.com/ofek/duckhop"
+repo_name = "ofek/duckhop"
+docs_dir = "docs"
+site_dir = "site"
+nav = [
+  { "Home" = "index.md" },
+  { "How-to guides" = [
+    { "Develop and verify a change" = "how-to/develop.md" },
+    { "Write documentation" = "how-to/write-documentation.md" },
+  ] },
+  { "Reference" = [
+    { "Tasks" = "reference/tasks.md" },
+    { "Platforms and dependencies" = "reference/platforms.md" },
+    { "Repository layout" = "reference/repository-layout.md" },
+  ] },
+  { "Explanation" = [
+    { "Project scope" = "explanation/project-scope.md" },
+  ] },
+]
+
+[project.theme]
+features = ["navigation.sections", "navigation.top", "search.highlight"]

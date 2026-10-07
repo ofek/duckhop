@@ -1,0 +1,10 @@
+/build/
+/site/
+/.venv/
+/.cache/
+/mise.local.toml
+/mise.local.lock
+/dist/
+/artifacts/
+__pycache__/
+*.pyc

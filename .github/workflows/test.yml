@@ -1,0 +1,84 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: test-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Deterministic checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Install locked tools
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
+        with:
+          version: 2026.10.3
+          install_args: --locked
+          cache: true
+      - name: Set up tooling
+        run: mise run setup
+      - name: Check repository
+        run: mise run check
+      - name: Verify a clean worktree
+        run: git diff --exit-code
+
+  test:
+    name: Build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      SCCACHE_DIR: ${{ github.workspace }}/.cache/sccache
+      SCCACHE_CACHE_SIZE: 2G
+      UV_CACHE_DIR: ${{ github.workspace }}/.cache/uv
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Install locked tools
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
+        with:
+          version: 2026.10.3
+          install_args: --locked
+          cache: true
+      - name: Reuse compiler cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: .cache/sccache
+          key: compiler-${{ matrix.os }}-${{ runner.arch }}-${{ hashFiles('mise.lock') }}-${{ github.sha }}
+          restore-keys: compiler-${{ matrix.os }}-${{ runner.arch }}-${{ hashFiles('mise.lock') }}-
+      - name: Set up tooling and submodules
+        run: mise run setup
+      - name: Build extension
+        run: mise run build
+        env:
+          CC: ${{ runner.os == 'Linux' && 'clang' || '' }}
+          CXX: ${{ runner.os == 'Linux' && 'clang++' || '' }}
+      - name: Run SQL smoke tests
+        run: mise run test
+      - name: Analyze C++
+        if: runner.os == 'Linux'
+        run: mise run check:cpp
+      - name: Flush compiler cache and report statistics
+        if: always()
+        run: mise exec -- sccache --stop-server

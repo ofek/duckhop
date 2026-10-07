@@ -1,0 +1,6 @@
+max_concurrency = 4
+max_retries = 2
+timeout = 30
+cache = false
+include_mail = false
+include_fragments = "anchor-only"

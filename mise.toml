@@ -1,0 +1,179 @@
+min_version = "2026.9.12"
+
+[settings]
+# Locked project tools must take precedence over other installed copies.
+activate_aggressive = true
+lockfile = true
+lockfile_platforms = ["linux-x64", "macos-arm64", "macos-x64", "windows-x64"]
+task.run_auto_install = false
+
+[tools]
+cmake = "4.4.4"
+ninja = "1.13.2"
+python = "3.14.8"
+uv = "0.12.23"
+sccache = "0.18.0"
+gh = "2.101.0"
+tombi = "1.7.2"
+ast-grep = "0.45.3"
+rumdl = "0.2.78"
+lychee = "0.24.2"
+vale = "3.24.0"
+ls-lint = "2.3.1"
+zizmor = "1.30.1"
+actionlint = "1.7.12"
+shellcheck = "0.11.0"
+shfmt = "3.14.1"
+
+[env]
+PYTHONDONTWRITEBYTECODE = "1"
+UV_NO_MANAGED_PYTHON = "1"
+
+[tasks.setup]
+description = "Initialize pinned submodules and synchronize locked Python tooling."
+run = "python -m scripts.build setup"
+
+[tasks.doctor]
+description = "Validate installed tools, submodules, and the native compiler."
+run = "python -m scripts.build doctor"
+
+[tasks.build]
+description = "Build DuckDB and DuckHop with debug symbols."
+depends = ["build:debug"]
+
+[tasks."build:debug"]
+description = "Build the debug CLI, test runner, and loadable extension."
+run = "python -m scripts.build build --config debug"
+
+[tasks."build:release"]
+description = "Build the optimized CLI, test runner, and loadable extension."
+run = "python -m scripts.build build --config release"
+
+[tasks.test]
+description = "Run debug SQL smoke tests and verify release asset loading."
+depends = ["test:sql"]
+
+[tasks."test:sql"]
+description = "Verify debug extension loading through sqllogictest and release asset names."
+run = "python -m scripts.build test --config debug"
+
+[tasks."test:release"]
+description = "Verify optimized extension loading through sqllogictest and release asset names."
+run = "python -m scripts.build test --config release"
+
+[tasks.clean]
+description = "Remove generated build and documentation output."
+run = "python -m scripts.build clean"
+
+[tasks.fmt]
+description = "Format project C++, CMake, TOML, and Markdown files."
+run = "python -m scripts.quality format --write"
+
+[tasks.fix]
+description = "Apply the project's deterministic formatters."
+depends = ["fmt"]
+
+[tasks."check:format"]
+description = "Check formatting without changing source files."
+run = "python -m scripts.quality format"
+
+[tasks."check:cpp"]
+description = "Analyze project C++ using the existing debug compilation database."
+run = "python -m scripts.build tidy"
+
+[tasks."check:toml"]
+description = "Check TOML formatting and lint TOML offline."
+run = "python -m scripts.quality toml"
+
+[tasks."check:markdown"]
+description = "Check Markdown formatting and structure."
+run = "python -m scripts.quality markdown"
+
+[tasks."check:prose"]
+description = "Check prose against committed terminology rules."
+run = "python -m scripts.quality prose"
+
+[tasks."check:ast"]
+description = "Test and enforce structural C++ rules and suppression hygiene."
+run = "python -m scripts.quality ast"
+
+[tasks."check:files"]
+description = "Validate source, documentation, and workflow file names."
+run = "ls-lint"
+
+[tasks."check:actions"]
+description = "Validate workflow syntax and audit workflow security offline."
+run = ["actionlint", "zizmor --offline --persona=pedantic --strict-collection .github/workflows"]
+
+[tasks."check:links:local"]
+description = "Validate local links and fragments without network access."
+run = "python -m scripts.quality links"
+
+[tasks."check:links:external"]
+description = "Validate external links over the network."
+run = "python -m scripts.quality links --external"
+
+[tasks."check:docs"]
+description = "Validate the documentation with a strict temporary build."
+run = "python -m scripts.quality docs"
+
+[tasks.check]
+description = "Run read-only, offline checks without building DuckDB."
+depends = ["check:format", "check:prose", "check:ast", "check:files", "check:actions", "check:links:local", "check:docs", "check:tasks", "test:tooling"]
+
+[tasks.verify]
+description = "Check, build, test, analyze C++, and validate documentation."
+depends = ["check", "build:debug"]
+run = [{ task = "test" }, { task = "check:cpp" }]
+
+[tasks.ci]
+description = "Run comprehensive verification on the current platform."
+depends = ["verify"]
+
+[tasks."docs:serve"]
+description = "Preview the documentation with live reload."
+run = "uv run --no-sync --offline zensical serve"
+
+[tasks."docs:build"]
+description = "Build strict documentation into site/."
+run = "uv run --no-sync --offline zensical build --strict --clean"
+
+[tasks."docs:check"]
+description = "Check documentation prose, links, formatting, and a strict build."
+depends = ["check:markdown", "check:prose", "check:links:local", "check:docs", "check:tasks"]
+
+[tasks."release:check"]
+description = "Validate release tag and revision prerequisites without publishing."
+run = "python -m scripts.release validate"
+
+[tasks."release:package"]
+description = "Assemble verified distribution assets and checksums in CI."
+hide = true
+run = "python -m scripts.release package"
+
+[tasks."release:publish"]
+description = "Upload verified assets to a draft and publish once in CI."
+hide = true
+run = "python -m scripts.release publish"
+
+[tasks."release:verify"]
+description = "Verify a published immutable release and every asset."
+hide = true
+run = "python -m scripts.release verify"
+
+[tasks."docs:publish"]
+description = "Publish generated documentation to gh-pages in CI."
+hide = true
+run = "python -m scripts.publish_docs"
+
+[tasks."test:tooling"]
+description = "Test release, documentation publication, and distribution build safeguards."
+run = "python -m unittest discover -s scripts/tests -t ."
+
+[tasks."docs:tasks"]
+description = "Generate the contributor task reference from mise metadata."
+run = "python -m scripts.task_docs"
+
+[tasks."check:tasks"]
+description = "Check that the generated task reference matches mise metadata."
+run = "python -m scripts.task_docs --check"

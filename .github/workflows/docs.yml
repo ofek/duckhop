@@ -1,0 +1,57 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/**
+      - zensical.toml
+      - mise.toml
+      - mise.lock
+      - pyproject.toml
+      - uv.lock
+      - scripts/**
+      - .github/workflows/docs.yml
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: documentation-gh-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish gh-pages
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents:
+        # Publish the generated gh-pages branch.
+        write
+      pages:
+        # Request a Pages build after the token-authored branch push.
+        write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Install locked tools
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
+        with:
+          version: 2026.10.3
+          install_args: --locked
+          cache: false
+      - name: Set up tooling
+        run: mise run setup
+      - name: Validate documentation
+        run: mise run docs:check
+      - name: Build documentation
+        run: mise run docs:build
+      - name: Publish generated site
+        run: mise run docs:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,9 @@
+id: no-namespace-in-header
+language: Cpp
+severity: error
+message: Keep namespace imports out of public headers to avoid affecting consumers.
+files:
+  - src/include/**/*.hpp
+rule:
+  pattern: using namespace $NAMESPACE;
+
