@@ -1,0 +1,8 @@
+id: no-namespace-in-header
+valid:
+  - 'namespace duckdb { class DuckhopExtension; }'
+  - 'using duckdb::DatabaseInstance;'
+invalid:
+  - 'using namespace std;'
+  - 'using namespace duckdb;'
+

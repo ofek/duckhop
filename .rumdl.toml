@@ -1,0 +1,12 @@
+[global]
+flavor = "mkdocs"
+# Prose uses one physical line per paragraph, including long technical paragraphs.
+disable = ["MD013"]
+exclude = ["duckdb/**", "extension-ci-tools/**", "site/**", "build/**", ".venv/**"]
+
+[MD004]
+style = "dash"
+
+[per-file-ignores]
+# The pull request template begins with the owner's required level-two sections.
+".github/pull_request_template.md" = ["MD041"]

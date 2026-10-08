@@ -1,0 +1,23 @@
+name: Feature request
+description: Explain a concrete use case or contributor workflow improvement.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem should this solve?
+      description: Describe the workload or contributor task and its current limitation.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Explain the behavior you need without assuming a particular API or storage design.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and constraints
+      description: Include relevant platform, data size, or DuckDB 2.x constraints and any alternatives you tried.

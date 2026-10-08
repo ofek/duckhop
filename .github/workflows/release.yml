@@ -1,0 +1,92 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate release source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      extension_config: ${{ steps.source.outputs.extension_config }}
+    permissions:
+      contents: read
+    steps:
+      - name: Check out exact tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install locked tools
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
+        with:
+          version: 2026.10.3
+          install_args: --locked
+          cache: false
+      - name: Validate tag and revision
+        id: source
+        run: mise run release:check
+      - name: Set up tooling and submodules
+        run: mise run setup
+      - name: Check repository
+        run: mise run check
+  build:
+    name:
+      # Resolve the reusable workflow from the caller's commit for compatibility with the pinned actionlint parser.
+      # zizmor: ignore[self-repository]
+      Build every release target
+    needs: validate
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build.yml
+    with:
+      extension_config: ${{ needs.validate.outputs.extension_config }}
+
+  publish:
+    name: Assemble and publish immutable release
+    needs: [validate, build]
+    environment: release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions:
+        # Download artifacts from this workflow run.
+        read
+      contents:
+        # Create the draft, upload its assets, and publish the release.
+        write
+    steps:
+      - name: Check out exact tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install locked tools
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca
+        with:
+          version: 2026.10.3
+          install_args: --locked
+          cache: false
+      - name: Download official build artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: duckhop-*-extension-*
+          path: artifacts
+      - name: Package and verify complete asset set
+        run: mise run release:package
+      - name: Upload to draft and publish once
+        run: mise run release:publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify release and asset attestations
+        run: mise run release:verify
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

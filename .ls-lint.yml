@@ -1,0 +1,26 @@
+ls:
+  src:
+    .dir: snake_case
+    .cpp: snake_case
+    .hpp: snake_case
+  src/include:
+    .hpp: snake_case
+  test/sql:
+    .test: snake_case
+  scripts:
+    .py: snake_case
+  docs:
+    .dir: kebab-case
+    .md: kebab-case
+  .github/workflows:
+    .yml: kebab-case
+ignore:
+  - .git
+  - .venv
+  - .cache
+  - build
+  - site
+  - dist
+  - duckdb
+  - extension-ci-tools
+

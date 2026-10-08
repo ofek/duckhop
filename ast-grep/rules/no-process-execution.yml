@@ -1,0 +1,12 @@
+id: no-process-execution
+language: Cpp
+severity: error
+message: Extension code must not execute external processes.
+files:
+  - src/**/*.cpp
+  - src/**/*.hpp
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: '^(::)?(std::)?system$|^(::)?_?popen$'

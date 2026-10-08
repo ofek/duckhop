@@ -1,0 +1,52 @@
+name: Build
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/build.yml
+      - .github/workflows/release.yml
+      - .gitmodules
+      - CMakeLists.txt
+      - Makefile
+      - extension_config.cmake
+      - duckdb
+      - extension-ci-tools
+      - src/**
+      - test/**
+      - scripts/release.py
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      extension_config:
+        description: CMake configuration produced by release source validation.
+        type: string
+        default: ''
+
+permissions: {}
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Official DuckDB builds and tests
+    permissions:
+      contents: read
+    # Keep this workflow and ci_tools_version aligned with the pinned extension-ci-tools submodule.
+    uses: duckdb/extension-ci-tools/.github/workflows/_extension_distribution.yml@969bc76276acec1c0a3922ff500d2ec3a1a3b037
+    with:
+      extension_name: duckhop
+      override_repository: ${{ github.repository }}
+      override_ref: ${{ github.sha }}
+      duckdb_version: 2b76188311fb55017564d8699ade29740b5aeb91
+      ci_tools_version: 969bc76276acec1c0a3922ff500d2ec3a1a3b037
+      # Inject the validated version into every platform's CMake configuration, including container builds.
+      extra_extension_config: ${{ inputs.extension_config }}
+      # Use DuckDB's architecture identifiers to select targets that run SQL tests before artifact upload.
+      exclude_archs: linux_arm64;osx_amd64;windows_amd64_mingw;wasm_mvp;wasm_eh;wasm_threads
+      reduced_ci_mode: disabled
+      save_cache: false
+      skip_tests: false

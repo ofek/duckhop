@@ -1,0 +1,12 @@
+toml-version = "v1.0.0"
+
+[files]
+include = ["*.toml"]
+exclude = ["mise.local.toml"]
+
+[format.rules]
+indent-width = 2
+
+[schema]
+# Tombi's bundled schemas are versioned with the locked binary and need no network.
+catalog.paths = ["tombi://www.schemastore.org/api/json/catalog.json"]
