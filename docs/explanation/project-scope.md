@@ -12,6 +12,6 @@ The bootstrap repository supplies a loadable extension, a metadata smoke test, c
 
 ## DuckDB integration
 
-DuckHop uses DuckDB's conventional C++ extension architecture because future indexing and traversal work may need lower-level engine integration. It targets DuckDB 2.x only and follows an exact pre-release baseline until an appropriate stable 2.x release is available.
+DuckHop uses DuckDB's conventional C++ extension architecture because future indexing and traversal work may need lower-level engine integration. It targets DuckDB 2.x only and follows an exact prerelease baseline until an appropriate stable 2.x release is available.
 
 The pinned submodules make that integration reproducible. Advancing them is a compatibility change that requires build and test evidence, rather than a routine side effect of another change. No external C/C++ library is needed by the initial extension.

@@ -100,7 +100,7 @@ def require_submodules() -> None:
 def setup() -> None:
     run(["git", "submodule", "sync", "--recursive"])
     run(["git", "submodule", "update", "--init", "--recursive"])
-    run(["uv", "sync", "--locked"])
+    run(["uv", "sync", "--no-active", "--locked"])
 
 
 def doctor() -> None:
@@ -133,13 +133,18 @@ def doctor() -> None:
         text=True,
     )
     print((identity.stdout + identity.stderr).strip().splitlines()[0])
-    run(["uv", "sync", "--locked", "--offline", "--check"])
+    run(["uv", "sync", "--no-active", "--locked", "--offline", "--check"])
 
 
 def build(config: str) -> None:
     require_submodules()
     env = native_environment()
     directory = ROOT / "build" / config
+    # CMake needs the project environment's interpreter after this isolated task exits.
+    python = output([
+        tool("uv"), "run", "--no-active", "--no-sync", "--offline",
+        "python", "-c", "import sys; print(sys.executable)",
+    ])
     cmake = [
         tool("cmake"),
         "-S",
@@ -151,7 +156,7 @@ def build(config: str) -> None:
         f"-DCMAKE_MAKE_PROGRAM={tool('ninja')}",
         f"-DCMAKE_BUILD_TYPE={config.title()}",
         "-DCMAKE_CXX_STANDARD=17",
-        f"-DPython3_EXECUTABLE={sys.executable}",
+        f"-DPython3_EXECUTABLE={python}",
         f"-DDUCKDB_EXTENSION_CONFIGS={(ROOT / 'extension_config.cmake').as_posix()}",
         f"-DUNITTEST_ROOT_DIRECTORY={ROOT.as_posix()}",
         "-DBUILD_SHELL=ON",
@@ -231,7 +236,7 @@ def tidy(config: str) -> None:
         raise RuntimeError("The compilation database contains no DuckHop sources. Rebuild the extension.")
     env = native_environment()
     for source in owned:
-        run(["uv", "run", "--no-sync", "--offline", "clang-tidy", "-p", str(directory), str(source)], env=env)
+        run(["uv", "run", "--no-active", "--no-sync", "--offline", "clang-tidy", "-p", str(directory), str(source)], env=env)
 
 
 def clean() -> None:

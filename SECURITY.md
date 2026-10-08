@@ -1,6 +1,6 @@
 # Security policy
 
-DuckHop is pre-release software with no published stable releases. Security fixes are developed on the current main branch; there is no maintained release series yet.
+DuckHop is prerelease software with no published stable releases. Security fixes are developed on the current main branch; there is no maintained release series yet.
 
 ## Report a vulnerability
 

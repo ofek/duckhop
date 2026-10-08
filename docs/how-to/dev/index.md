@@ -2,7 +2,7 @@
 
 ## Set up a checkout
 
-Install Git, [mise](https://mise.jdx.dev/getting-started.html), and the [native compiler and SDK](../reference/platforms.md) for your operating system. mise manages the remaining project tools. Windows builds use the Visual Studio compiler environment automatically and do not require WSL.
+Install Git, [mise](https://mise.jdx.dev/getting-started.html), and the [native compiler and SDK](../../reference/dev/platforms.md) for your operating system. `mise` manages the remaining project tools. Windows builds use the Visual Studio compiler environment automatically and do not require WSL.
 
 Clone the repository, review `mise.toml`, then install the locked tools and initialize the pinned submodules:
 
@@ -28,7 +28,7 @@ mise run test
 
 Use `mise run build:release` when you need an optimized artifact, then `mise run test:release` to test it. `mise run test:sql` runs the debug SQL suite. Place new SQL-facing tests under `test/sql/` and assert observable results.
 
-If a stale build prevents configuration after a compiler or dependency change, use `mise run clean`, then rebuild. `clean` removes generated build output; it does not replace setup.
+If a stale build prevents configuration after a compiler or dependency change, use `mise run clean`, then rebuild. `clean` removes generated build output; it does not replace the setup task.
 
 ## Format and check
 
@@ -41,7 +41,7 @@ mise run check
 
 `fmt` modifies C++, TOML, Markdown, and CMake files. `fix` currently applies the same formatters. Review either task's edits before committing.
 
-`check` uses only the prepared checkout and locked tools; it does not download schemas, prose styles, or external URLs. It checks formatting, configuration, prose, local links, structural rules, filenames, workflows, and a strict documentation build. The [task reference](../reference/tasks.md) lists focused checks for faster iteration.
+`check` uses only the prepared checkout and locked tools; it does not download schemas, prose styles, or external URLs. It checks formatting, configuration, prose, local links, structural rules, filenames, workflows, and a strict documentation build. The [task reference](../../reference/dev/tasks.md) lists focused checks for faster iteration.
 
 ## Finish a change
 
@@ -61,4 +61,4 @@ Use `mise run check:links:external` only when you want a network check of extern
 
 Run `mise run doctor` first when a tool, compiler, or submodule is missing. Run `mise run setup` again after locked dependencies change. Static analysis needs the compilation database from a successful build; run `mise run build` before `mise run check:cpp`.
 
-Fix the source of a diagnostic before considering a suppression. If an upstream header needs a suppression, keep it scoped to the reported issue and explain why it is necessary. Do not disable an entire check to hide a finding.
+Fix the source of a diagnostic before considering a suppression. If an upstream header needs a suppression, keep it scoped to the reported issue and explain why it is necessary. Do not disable an entire check to hide a diagnostic.

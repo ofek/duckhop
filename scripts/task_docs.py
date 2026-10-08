@@ -9,7 +9,7 @@ import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "docs/reference/tasks.md"
+OUTPUT = ROOT / "docs/reference/dev/tasks.md"
 
 
 def render() -> str:
@@ -59,7 +59,7 @@ def main() -> int:
         print("Task reference matches mise metadata.")
     else:
         OUTPUT.write_text(expected, encoding="utf-8", newline="\n")
-        print("Generated docs/reference/tasks.md from mise metadata.")
+        print(f"Generated {OUTPUT.relative_to(ROOT).as_posix()} from mise metadata.")
     return 0
 
 

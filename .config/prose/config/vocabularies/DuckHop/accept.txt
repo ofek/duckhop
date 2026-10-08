@@ -1,0 +1,27 @@
+# Entries specify canonical names; the (?i) prefix permits any capitalization.
+(?i)reachability
+(?i)ruleset
+AppleClang
+CI
+Dependabot
+Diátaxis
+DuckDB
+DuckDB's
+DuckHop
+DuckHop's
+EditorConfig
+GitHub
+GitHub Actions
+LF
+Lev
+Linux
+Makefile
+Ofek
+SHAs
+UTF
+Windows
+Zensical
+extension-ci-tools
+macOS
+mise
+sqllogictest

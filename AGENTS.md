@@ -1,6 +1,6 @@
 # Repository instructions
 
-- DuckHop targets DuckDB 2.x only. The current baseline is a pre-release revision.
+- DuckHop targets DuckDB 2.x only. The current baseline is a prerelease revision.
 - DuckDB and extension-ci-tools are pinned submodules. Update them deliberately with compatibility evidence; do not edit their contents or advance them incidentally.
 - Use `mise run ...` tasks for contributor workflows. Keep tooling versions and lockfiles synchronized.
 - Run `mise run check` for deterministic, offline checks and `mise run verify` before finalizing substantial changes. Report any checks that could not run.
