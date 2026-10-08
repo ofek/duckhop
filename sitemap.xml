@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      <url>
+        <loc>https://ofek.dev/duckhop/</loc>
+      </url>
+      <url>
+        <loc>https://ofek.dev/duckhop/explanation/project-scope/</loc>
+      </url>
+      <url>
+        <loc>https://ofek.dev/duckhop/how-to/develop/</loc>
+      </url>
+      <url>
+        <loc>https://ofek.dev/duckhop/how-to/write-documentation/</loc>
+      </url>
+      <url>
+        <loc>https://ofek.dev/duckhop/reference/platforms/</loc>
+      </url>
+      <url>
+        <loc>https://ofek.dev/duckhop/reference/repository-layout/</loc>
+      </url>
+      <url>
+        <loc>https://ofek.dev/duckhop/reference/tasks/</loc>
+      </url>
+</urlset>
