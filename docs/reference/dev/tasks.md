@@ -21,7 +21,7 @@ Run these commands from the repository root after installing the locked tools an
 | `mise run check:links:external` | Validate external links over the network. |
 | `mise run check:links:local` | Validate local links and fragments without network access. |
 | `mise run check:markdown` | Check Markdown formatting and structure. |
-| `mise run check:prose` | Check prose against committed terminology rules. |
+| `mise run check:prose` | Check prose against terminology and grammar rules. |
 | `mise run check:tasks` | Check that the generated task reference matches mise metadata. |
 | `mise run check:toml` | Check TOML formatting and lint TOML offline. |
 | `mise run ci` | Run comprehensive verification on the current platform. |

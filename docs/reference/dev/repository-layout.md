@@ -3,7 +3,7 @@
 | Path | Purpose |
 | --- | --- |
 | `src/` | DuckHop's C++ extension implementation and headers. |
-| `test/sql/` | sqllogictest files for observable SQL behavior and extension loading. |
+| `test/sql/` | `sqllogictest` files for observable SQL behavior and extension loading. |
 | `duckdb/` | The exact DuckDB 2.x source submodule used for builds. |
 | `extension-ci-tools/` | Pinned upstream extension build and distribution tooling. |
 | `CMakeLists.txt`, `extension_config.cmake`, `Makefile` | Conventional DuckDB extension build integration. |
